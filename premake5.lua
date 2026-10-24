@@ -7,11 +7,11 @@ if not sdkdir or sdkdir == "" then
 end
 sdkdir = path.translate(sdkdir, "/")
 
-workspace "SA.ImprovedShadows"
+workspace "ImprovedShadowsSA"
     configurations { "Release", "Debug" }
     location "build"
 
-project "SA.ImprovedShadows"
+project "ImprovedShadowsSA"
     kind "SharedLib"
     language "C++"
     targetextension ".asi"

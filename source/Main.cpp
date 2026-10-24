@@ -1,6 +1,8 @@
 #include <plugin.h>
 #include <windows.h>
 
+#include "StencilShadows.h"
+
 using namespace plugin;
 
 struct Main
@@ -9,8 +11,10 @@ struct Main
     {
         if (!IsGameVersion10us())
         {
-            OutputDebugStringA("SA.ImprovedShadows: GTA SA 1.0 US is required.\n");
+            OutputDebugStringA("ImprovedShadowsSA: GTA SA 1.0 US is required.\n");
             return;
         }
+
+        InstallImprovedStencilShadows();
     }
 } gInstance;

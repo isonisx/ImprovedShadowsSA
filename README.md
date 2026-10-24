@@ -1,8 +1,8 @@
-# SA.ImprovedShadows
+# ImprovedShadowsSA
 
-GTA San Andreas 1.0 US plugin scaffold. Output: `output/Release/SA.ImprovedShadows.asi`.
+GTA San Andreas 1.0 US stencil-shadow fixes. Output: `output/Release/ImprovedShadowsSA.asi`.
 
-The plugin currently checks the game version and does not modify shadows.
+The PC stencil path darkens the wrong pixels, pops shadows off at 50 units, and rebuilds building volumes every fourth frame. This plugin clears the stencil buffer and darkens only marked pixels, fades each shadow over the last quarter of a 120-unit range, updates every volume every frame, and raises the slot pool from 64 to 192. Dynamic objects with a collision shadow mesh are included. The darkness is the current sky color, divided down, instead of black, so noon shadows read blue and sunset follows the sky. Aircraft extrusion follows the sun, and forgotten aircraft subclasses plus BMX use the same special cases as helicopters, planes, and bikes.
 
 ## Prerequisites
 
@@ -36,7 +36,7 @@ Run this after `./generate.sh`:
 ```
 
 1. Dry-runs Debug and sends the commands to Bear. Bear writes `compile_commands.json` in the project root. `LC_ALL=C` is required so Bear can parse Make.
-2. Builds Release. The `.asi` is `output/Release/SA.ImprovedShadows.asi`.
+2. Builds Release. The `.asi` is `output/Release/ImprovedShadowsSA.asi`.
 
 `compile_commands.json` is gitignored. Run `./build.sh` again after changing includes, defines, or `premake5.lua`.
 
