@@ -21,7 +21,11 @@ project "ImprovedShadowsSA"
     filter "action:gmake or action:gmake2"
         toolset "gcc"
         gccprefix "i686-w64-mingw32-"
+        -- 32-bit MinGW otherwise does float math in x87 80-bit precision.
+        -- MSVC x86 uses SSE2. Do not add -msseregparm; it breaks the Plugin.a ABI.
         buildoptions {
+            "-msse2",
+            "-mfpmath=sse",
             "-fpermissive",
             "-fcommon",
             "-fms-extensions",

@@ -17,19 +17,19 @@ xcode-select --install
 brew install mingw-w64 bear premake
 ```
 
-## generate.sh
+## premake5.sh
 
-Set `PLUGIN_SDK_DIR` in `generate.sh` to your Plugin-SDK checkout, then:
+Set `PLUGIN_SDK_DIR` in `premake5.sh` to your Plugin-SDK checkout, then:
 
 ```sh
-./generate.sh
+./premake5.sh
 ```
 
 It deletes `build/` and `output/`, then writes Makefiles into `build/`.
 
 ## build.sh
 
-Run this after `./generate.sh`:
+Run this after `./premake5.sh`:
 
 ```sh
 ./build.sh
@@ -42,6 +42,6 @@ Run this after `./generate.sh`:
 
 ## clangd
 
-`.clangd` tells clangd where the compilation database is. `./build.sh` must have run, so `compile_commands.json` exists.
+`./build.sh` writes `compile_commands.json` in the project root. clangd uses that database.
 
-The database calls `i686-w64-mingw32-g++`. clangd skips that compiler unless `--query-driver` matches it. Zed's folder settings already pass that flag.
+The database calls `i686-w64-mingw32-g++`. clangd skips that compiler unless `--query-driver` matches it.
