@@ -60,10 +60,13 @@ project "ImprovedShadowsSA"
         sdkdir .. "/output/lib"
     }
 
-    files {
-        "source/**.h",
-        "source/**.cpp",
-    }
+    files { "source/**.cpp", "source/**.h", "doc/ImprovedShadowsSA.ini" }
+    filter "files:doc/ImprovedShadowsSA.ini"
+        buildmessage "Copying ImprovedShadowsSA.ini"
+        local copy = os.host() == "windows" and "{COPYFILE}" or "cp"
+        buildcommands { copy .. ' "%{file.relpath}" "%{cfg.targetdir}/ImprovedShadowsSA.ini"' }
+        buildoutputs { "%{cfg.targetdir}/ImprovedShadowsSA.ini" }
+    filter {}
 
     filter "configurations:Release"
         defines { "GTASA", "PLUGIN_SGV_10US", "RW", "NDEBUG" }

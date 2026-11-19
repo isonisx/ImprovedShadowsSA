@@ -1,7 +1,9 @@
 #include <plugin.h>
 #include <windows.h>
 
+#include "Settings.h"
 #include "StencilShadows.h"
+#include "StaticVehicleShadows.h"
 
 using namespace plugin;
 
@@ -15,6 +17,9 @@ struct Main
             return;
         }
 
-        InstallImprovedStencilShadows();
+        const Settings settings = LoadSettings();
+        InstallImprovedStencilShadows(settings.shadowColorDivisor, settings.shadowOpacity);
+        if (settings.forceStaticVehicleShadows)
+            InstallStaticVehicleShadows();
     }
 } gInstance;

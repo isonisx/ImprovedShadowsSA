@@ -14,6 +14,8 @@
 #include "CWorld.h"
 #include "RenderWare.h"
 
+#include "StencilShadows.h"
+
 // PC stencil shadows are a finished slot list wrapped around an unfinished
 // composite. Volumes are built from each model's collision shadow mesh, then
 // one fullscreen rectangle is supposed to darken the pixels inside them.
@@ -32,11 +34,6 @@ namespace
     // Wider than the cutoff so a large collision sphere is still visited.
     constexpr float kScanRadius = 200.0f;
     constexpr float kFadeFraction = 0.25f;
-    // Sky-top tint, same source as Junior_Djjr's Dynamic Shadow Color.
-    // Dividing pulls the sky down toward black; 100 is the full-strength
-    // opacity that mod used in place of the game's 50.
-    constexpr float kShadowColorDivisor = 8.0f;
-    constexpr float kShadowOpacity = 100.0f;
     constexpr unsigned kWorkBufferBytes = 0x6000;
 
     // The collision shadow flag is bit 2 of CCollisionData+0x7. Plugin-SDK
@@ -79,6 +76,8 @@ namespace
     static_assert(sizeof(StencilShadow) == 0x1C);
 
     StencilShadow gPool[kPoolSize];
+    float gShadowColorDivisor;
+    int gShadowOpacity;
     float gDrawDistanceSquared = kDrawDistance * kDrawDistance;
     float gScanRadius = kScanRadius;
 
@@ -151,14 +150,14 @@ namespace
 
         // Timecycle strength still scales the darkness, then the distance fade.
         const int strength = CTimeCycle::m_CurrentColours.m_nShadowStrength;
-        const int alpha = static_cast<int>(kShadowOpacity * static_cast<float>(strength) / 256.0f * scale);
+        const int alpha = static_cast<int>(gShadowOpacity * static_cast<float>(strength) / 256.0f * scale);
         return static_cast<unsigned char>(std::clamp(alpha, 0, 255));
     }
 
     unsigned char SkyChannel(unsigned short value)
     {
-        const int color = static_cast<int>(static_cast<float>(value) / kShadowColorDivisor + 0.5f);
-        return static_cast<unsigned char>(std::clamp(color, 0, 255));
+        const float color = static_cast<float>(value) / gShadowColorDivisor + 0.5f;
+        return static_cast<unsigned char>(std::clamp(color, 0.0f, 255.0f));
     }
 
     // A shadow is skylight, not a black decal. Noon is a dark blue, sunset
@@ -502,7 +501,7 @@ namespace
     }
 }
 
-void InstallImprovedStencilShadows()
+void InstallImprovedStencilShadows(float shadowColorDivisor, int shadowOpacity)
 {
     if (!ExpectMovImmediate(0x70FB20) || !ExpectMovImmediate(0x70FB2A))
     {
@@ -510,6 +509,8 @@ void InstallImprovedStencilShadows()
         return;
     }
 
+    gShadowColorDivisor = shadowColorDivisor;
+    gShadowOpacity = shadowOpacity;
     plugin::patch::ReplaceFunction(kInit, reinterpret_cast<void*>(Init));
     plugin::patch::ReplaceFunction(kRenderStencilShadows, reinterpret_cast<void*>(RenderStencilShadows));
     plugin::patch::ReplaceFunction(kRenderBuffer, reinterpret_cast<void*>(RenderBuffer));
